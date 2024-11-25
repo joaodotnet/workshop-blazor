@@ -1,0 +1,138 @@
+﻿@page "/pizzas"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@rendermode InteractiveServer
+@inject PizzaService PizzaService
+
+<h3>Pizzas</h3>
+
+<p>Menu:</p>
+
+@if (pizzas == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @* <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Vegetariano</th>
+                <th>Preço</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pizza in pizzas)
+            {
+                <tr>
+                    <td>@pizza.Name</td>
+                    <td>@pizza.Description</td>
+                    <td>@(pizza.Vegetarian ? "Sim" : "Não")</td>
+                    <td>@pizza.Price.ToString("C")</td>
+                    <td><button @onclick="() => OnEditHandler(pizza.Id)">Editar</button></td>
+                    <td><button @onclick="() => OnDeleteHandler(pizza.Id)">Apagar</button></td>
+                </tr>
+            }
+        </tbody>
+    </table> *@
+
+    <QuickGrid Class="table" Items="pizzas" Pagination="@pagination">
+        <PropertyColumn Property="p => p.Name" Sortable="true" />
+        <PropertyColumn Property="p => p.Description" />
+        <PropertyColumn Property="p => p.Vegetarian" />
+        <PropertyColumn Property="p => p.Price" Sortable="true" />
+        <TemplateColumn Context="p">
+            <button class="btn btn-primary" @onclick="() => OnEditHandler(p.Id)">Editar</button>
+        </TemplateColumn>
+        <TemplateColumn Context="p">
+            <button class="btn btn-danger" @onclick="() => OnDeleteHandler(p.Id)">Apagar</button>
+        </TemplateColumn>
+    </QuickGrid>
+    <Paginator State="@pagination" />
+}
+<hr>
+<h3>@title</h3>
+<div class="row">
+    <div class="col-md-6">
+        <EditForm Model="newPizza" OnValidSubmit="UpsertPizza">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label>
+                <InputText id="name" @bind-Value="newPizza.Name" class="form-control" />
+                <ValidationMessage For="() => newPizza.Name" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label>
+                <InputText id="description" @bind-Value="newPizza.Description" class="form-control" />
+                <ValidationMessage For="() => newPizza.Description" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Price:</label>
+                <InputNumber id="price" @bind-Value="newPizza.Price" class="form-control" />
+                <ValidationMessage For="() => newPizza.Price" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="vegetarian" class="form-label">Vegetarian:</label>
+                <InputCheckbox id="vegetarian" @bind-Value="newPizza.Vegetarian" class="form-check-input" />
+                <ValidationMessage For="() => newPizza.Vegetarian" class="text-danger" />
+            </div>
+            <button type="submit" class="btn btn-primary">@buttonText</button>
+            <button type="button" class="btn btn-secondary" @onclick="ResetForm">Cancel</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private IQueryable<Pizza> pizzas = Array.Empty<Pizza>().AsQueryable();
+    private PaginationState pagination = new() { ItemsPerPage = 5 };
+    private string title = "Adicionar Pizza";
+    private string buttonText = "Adicionar";
+    [SupplyParameterFromForm]
+    protected Pizza newPizza { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        pizzas = PizzaService.GetPizzas().AsQueryable();
+    }
+
+    protected void UpsertPizza()
+    {
+        if(newPizza.Id == 0)
+        {
+            PizzaService.AddPizza(newPizza);
+            newPizza = new();
+        }
+        else
+        {
+            PizzaService.UpdatePizza(newPizza);
+            newPizza = new();
+        }
+        pizzas = PizzaService.GetPizzas().AsQueryable();
+        title = "Adicionar Pizza";
+        buttonText = "Adicionar";
+    }
+
+    private void OnEditHandler(int pizzaId)
+    {
+        newPizza = PizzaService.GetPizza(pizzaId);        
+        title = $"Editar Pizza {newPizza.Name}";
+        buttonText = "Atualizar";
+    }
+
+    private void OnDeleteHandler(int pizzaId)
+    {
+        PizzaService.DeletePizza(pizzaId);
+        pizzas = PizzaService.GetPizzas().AsQueryable();
+    }
+    private void ResetForm()
+    {
+        newPizza = new();
+        title = "Adicionar Pizza";
+        buttonText = "Adicionar";
+    }
+}

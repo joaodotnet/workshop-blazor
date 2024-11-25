@@ -1,0 +1,50 @@
+# .NET
+*.dll
+*.exe
+*.pdb
+*.nuget
+*.snupkg
+*.nupkg
+*.log
+*.user
+*.lock.json
+*.lock
+*.cache
+*.config
+*.csproj.user
+*.suo
+*.sln.docstates
+
+# Build directories
+bin/
+obj/
+
+# Visual Studio Code
+.vscode/
+
+# User-specific files
+*.rsuser
+*.sln.docstates
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Entity Framework
+Migrations/
+
+# Azure
+appsettings.Development.json
+appsettings.json
+
+# Others
+.DS_Store
+Thumbs.db
+
+#Ignore sqlite project
+*.db
+*.db-shm
+*.db-wal

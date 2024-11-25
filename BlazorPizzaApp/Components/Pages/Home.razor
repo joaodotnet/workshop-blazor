@@ -1,0 +1,56 @@
+﻿@page "/"
+@rendermode InteractiveServer
+<PageTitle>Home</PageTitle>
+
+<h1>Olá, malta da FCUL!</h1>
+
+Welcome to your new app.
+<div>
+    <p>Enter some text:</p>
+    <input @bind="text" @bind:event="oninput" @bind:after="OnSearch">
+    <button @onclick="OnClearHandler">Clear</button>
+    <p>@text</p>
+    <p>@result</p>
+</div>
+
+ @* <div>
+    <p>Enter some text:</p>
+    <input @bind="text" @bind:event="oninput">
+    <button @onclick="OnClearHandler">Clear</button>
+    <p>@text</p>
+ </div> *@
+
+@* <div>
+    <p>Enter some text:</p>
+    <input @bind="text">
+    <p>@text</p>
+</div> *@
+
+@* <div>
+    <p>Enter some text:</p>
+    <input @onchange="OnChangeHandler">
+    <p>@text</p>
+</div> *@
+
+<hr>
+<Counter IncrementAmount="10" />
+
+@code {
+    string text = "";
+    string result = "";
+    private void OnChangeHandler(ChangeEventArgs e)
+    {
+        text = e.Value?.ToString()!;
+    }
+    private void OnClearHandler(MouseEventArgs e)
+    {
+        text = "";
+    }
+
+    async Task OnSearch()
+    {
+        result="Searching...";
+        await Task.Delay(2000);
+        result = $"Found {Random.Shared.Next(1, 100)} results";
+    }
+}
