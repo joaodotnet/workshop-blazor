@@ -9,7 +9,7 @@
 ## Installation
 
 - Visual Studio Code: https://code.visualstudio.com/
-- .NET 8 SDK: https://dotnet.microsoft.com/en-us/download
+- .NET 9 SDK: https://dotnet.microsoft.com/en-us/download
 
 ### Visual Sutdio Code Plugins
 
